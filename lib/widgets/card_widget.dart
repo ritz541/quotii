@@ -1,10 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:quotii/model/quote_model.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CardWidget extends StatelessWidget {
+class CardWidget extends StatefulWidget {
   final QuoteModel quote;
 
   const CardWidget({required this.quote, super.key});
+
+  @override
+  State<CardWidget> createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> {
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfFavorite();
+  }
+
+  _checkIfFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favorites = prefs.getStringList('favorites') ?? [];
+    final quoteString = '${widget.quote.quote} - ${widget.quote.author}';
+    setState(() {
+      isFavorite = favorites.contains(quoteString);
+    });
+  }
+
+  _toggleFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favorites = prefs.getStringList('favorites') ?? [];
+    final quoteString = '${widget.quote.quote} - ${widget.quote.author}';
+
+    if (isFavorite) {
+      favorites.remove(quoteString);
+    } else {
+      favorites.add(quoteString);
+    }
+
+    await prefs.setStringList('favorites', favorites);
+
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +80,7 @@ class CardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              quote.quote,
+              widget.quote.quote,
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 18,
@@ -49,7 +91,7 @@ class CardWidget extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              '- ${quote.author}',
+              '- ${widget.quote.author}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -73,13 +115,14 @@ class CardWidget extends StatelessWidget {
                     ),
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      // Favorite action
-                    },
+                    onPressed: _toggleFavorite,
                     icon: Icon(
-                      Icons.favorite_border_outlined,
-                      // color: isDark ? Colors.white : Colors.black,
-                      color: Colors.red,
+                      isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border_outlined,
+                      color: isFavorite
+                          ? Colors.red
+                          : (isDark ? Colors.white : Colors.black),
                     ),
                   ),
                 ),
@@ -97,12 +140,22 @@ class CardWidget extends StatelessWidget {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      // Share action
+                      // Copy to clipboard
+                      final data =
+                          '${widget.quote.quote}\n- ${widget.quote.author}';
+                      Clipboard.setData(ClipboardData(text: data));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Quote copied to clipboard!'),
+                          backgroundColor: isDark
+                              ? Colors.grey[800]
+                              : Colors.grey[600],
+                        ),
+                      );
                     },
                     icon: Icon(
                       Icons.share_rounded,
-                      color: Colors.blue,
-                      // color: isDark ? Colors.white : Colors.black,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
                 ),

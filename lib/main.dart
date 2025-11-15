@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quotii/home_page.dart';
+import 'package:quotii/main_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,6 +24,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Quotii',
       theme: ThemeData(
         brightness: Brightness.light,
@@ -42,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: false,
       ),
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-      home: HomePage(toggleMode: toggleMode, isDark: isDark),
+      home: MainPage(toggleMode: toggleMode, isDark: isDark),
     );
   }
 }
