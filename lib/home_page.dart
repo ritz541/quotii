@@ -33,27 +33,66 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Color(0xffeff3ff),
+      backgroundColor: isDark
+          ? const Color(0xff121212)
+          : const Color(0xfff0f0f0),
       appBar: AppBar(
-        backgroundColor: Color(0xffeff3ff),
+        backgroundColor: isDark
+            ? const Color(0xff121212)
+            : const Color(0xfff0f0f0),
+        elevation: 0,
         title: Text(
-          'Quotes',
-          style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+          'Quotii',
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+            fontFamily: 'Font',
+          ),
         ),
         actions: [
-          IconButton(
-            onPressed: widget.toggleMode,
-            icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
+          Container(
+            margin: const EdgeInsets.all(6),
+            child: ElevatedButton(
+              onPressed: widget.toggleMode,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark
+                    ? const Color(0xff333333)
+                    : Colors.white,
+                foregroundColor: isDark ? Colors.white : Colors.black,
+                elevation: 4,
+                shadowColor: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: isDark ? Colors.white : Colors.black,
+                    width: 2,
+                  ),
+                ),
+              ),
+              child: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
+            ),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          final q = quotes[index];
-          return CardWidget(quote: q);
+      body: RefreshIndicator(
+        onRefresh: () async {
+          loadQuotes();
         },
-        itemCount: quotes.length,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemBuilder: (context, index) {
+            final q = quotes[index];
+            return CardWidget(quote: q);
+          },
+          itemCount: quotes.length,
+        ),
       ),
     );
   }

@@ -24,12 +24,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Quotii',
       theme: ThemeData(
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: isDark ? Brightness.dark : Brightness.light,
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
         ),
+        useMaterial3: false,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: false,
+      ),
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       home: HomePage(toggleMode: toggleMode, isDark: isDark),
     );
   }

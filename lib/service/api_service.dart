@@ -4,7 +4,7 @@ import 'package:quotii/model/quote_model.dart';
 class ApiService {
   final Dio _dio = Dio();
 
-  Future fetchQuotes() async {
+  Future<List<QuoteModel>> fetchQuotes() async {
     final response = await _dio.get(
       'https://motivational-spark-api.vercel.app/api/quotes/random/10',
     );
